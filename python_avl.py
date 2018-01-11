@@ -6,7 +6,7 @@ import unittest
         __setitem__(k, v)   t[k] = v
         __delitem__(k)      del t[k]
         __len__()           len(t)
-        __iter__()          for k in t:
+        __iter__()          for k,v in t: # inorder traversal
         put(k, v)
         get(k)
 '''
