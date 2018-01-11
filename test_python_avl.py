@@ -44,7 +44,7 @@ class AVLTreeTests(unittest.TestCase):
         for n in randList:  # original list randomized
             # delete n from sortList and Tree and check matches
             sortList.remove(n)
-            self.avl.delete(n)
+            self.avl._delete(n)
             if len(sortList) > 1:
                 assert list(self.avl) == sortList
         assert self.avl.root == None
@@ -60,7 +60,7 @@ class AVLTreeTests(unittest.TestCase):
             shuffled2 = ordered[:]
             random.shuffle(shuffled2)
             for e in shuffled2:
-                self.avl.delete(e)
+                self.avl._delete(e)
                 ordered.remove(e)
                 if len(self.avl) > 0:
                     if list(self.avl) != ordered:
@@ -92,10 +92,10 @@ class AVLTreeTests(unittest.TestCase):
     def testBadDelete(self):
         self.avl.put(10, 10)
         with self.assertRaises(KeyError):
-            self.avl.delete(5)
-        self.avl.delete(10)
+            self.avl._delete(5)
+        self.avl._delete(10)
         with self.assertRaises(KeyError):
-            self.avl.delete(5)
+            self.avl._delete(5)
 
 
 if __name__ == '__main__':

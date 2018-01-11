@@ -50,7 +50,6 @@ class AVLTree:
         self.root = self._put(self.root, key, value)
 
 
-
     def _put(self, node, key, value):  # recursive _put follow tree down till place found for new node
         if not node: # place found, return new node
             self.size = self.size + 1
@@ -64,36 +63,39 @@ class AVLTree:
             node.value = value  # key already in tree, change value
             return node # return existing node
 
-        return self.adjustNode(key, node)
+        return self._adjust_node(node, key)
 
-    def adjustNode(self, key, node):
-        node.height = 1 + max(self.getHeight(node.right), self.getHeight(node.left))
-        balance = self.getBalance(node)
+    def _adjust_node(self, node, key):
+        node.height = 1 + max(self._height(node.right), self._height(node.left))
+        balance = self._balance(node)
 
         # check for imbalance and rotate to correct
         if balance > 1: # left heavy
             if key > node.left.key:
-                node.left = self.leftRotate(node.left) # Left Right
-            return self.rightRotate(node) # catch either Left Right or Right Right
+                node.left = self._leftRotate(node.left) # Left Right
+            return self._rightRotate(node) # catch either Left Right or Right Right
         elif balance < -1:
             if key < node.right.key:
-                node.right = self.rightRotate(node.right) # Right Left
-            return self.leftRotate(node) # catch either Right Left or Left Left
+                node.right = self._rightRotate(node.right) # Right Left
+            return self._leftRotate(node) # catch either Right Left or Left Left
 
         return node
+
+    def __delitem__(self, key):
+        self.root = self._delete(self.root, key)
 
     # Recursive function to delete a node with
     # given key from subtree with given node.
     # It returns node of the modified subtree.
-    def delete(self, node, key):
+    def _delete(self, node, key):
 
         if not node: return node # not found
 
         # find node with key
         elif key < node.value:
-            node.left = self.delete(node.left, key)
+            node.left = self._delete(node.left, key)
         elif key > node.value:
-            node.right = self.delete(node.right, key)
+            node.right = self._delete(node.right, key)
         else: # equal, it is found
             if node.left is None: # case of only right child
                 return node.right # replace node with child
@@ -104,48 +106,38 @@ class AVLTree:
             # case of two children
             succ = self.getMinValueNode(node.right) # successor of node
             node.key = succ.key # copy
-            node value = succ.value
-            node.right = self.delete(node.right, succ.value)
+            node.value = succ.value
+            node.right = self._delete(node.right, succ.key)  # promote succ key
 
         # If the tree has only one node,
         # simply return it
         if node is None:
             return node
 
-        # Step 2 - Update the height of the
-        # ancestor node
-        node.height = 1 + max(self.getHeight(node.left),
-                              self.getHeight(node.right))
+        return self._adjust_node(node, key)
 
-        # Step 3 - Get the balance factor
-        balance = self.getBalance(node)
+    def _find_node(self, node, key):
+        if not node:
+            return None
+        if node.key == key:
+            return node
+        if key < node.key:
+            return self._find_node(node.left, key)
+        return self._find_node(node.right, key)
 
-        # Step 4 - If the node is unbalanced,
-        # then try out the 4 cases
-        # Case 1 - Left Left
-        if balance > 1 and self.getBalance(node.left) >= 0:
-            return self.rightRotate(node)
+    def __getItem__(self, key):
+        node = self._find_node(self.root, key)
+        return node.value if node else None
 
-        # Case 2 - Right Right
-        if balance < -1 and self.getBalance(node.right) <= 0:
-            return self.leftRotate(node)
+    def get(self,key): return self[key]
 
-        # Case 3 - Left Right
-        if balance > 1 and self.getBalance(node.left) < 0:
-            node.left = self.leftRotate(node.left)
-            return self.rightRotate(node)
+    def __contains__(self, key):
+        return self[key] is not None
 
-        # Case 4 - Right Left
-        if balance < -1 and self.getBalance(node.right) > 0:
-            node.right = self.rightRotate(node.right)
-            return self.leftRotate(node)
+    @staticmethod
+    def _height(node): return node.height if node else 0
 
-        return root
-
-
-    def getHeight(self, node): return node.height if node else 0
-
-    def getBalance(self, node): return self.getHeight(node.left) - self.getHeight(node.right)
+    def _balance(self, node): return self._height(node.left) - self._height(node.right)
 
     #     a                             b
     #      \                          // \      < update link //
@@ -153,15 +145,15 @@ class AVLTree:
     #     /  \   - - - - - - - ->     \\        < update link \\
     #    x    c                        x
 
-    def leftRotate(self, a):
+    def _leftRotate(self, a):
         b = a.right
         x = b.left   # get x
         b.left = a   # update b left link point to a
         a.right = x  # replace a.right link to now point to x
 
         # Update heights
-        a.height = 1 + max(self.getHeight(a.left), self.getHeight(a.right))
-        b.height = 1 + max(self.getHeight(b.left), self.getHeight(b.right))
+        a.height = 1 + max(self._height(a.left), self._height(a.right))
+        b.height = 1 + max(self._height(b.left), self._height(b.right))
 
         # Return the new root node
         return b
@@ -173,39 +165,39 @@ class AVLTree:
     #     /  \   - - - - - - - ->         //      < update link //
     #    c    x                          x
 
-    def rightRotate(self, a):
+    def _rightRotate(self, a):
         b = a.left
         x = b.right  # get x d
         b.right = a  # update b right link point to a
         a.left = x  # replace c left link to now point to x
 
         # Update heights
-        a.height = 1 + max(self.getHeight(a.left), self.getHeight(a.right))
-        b.height = 1 + max(self.getHeight(b.left), self.getHeight(b.right))
+        a.height = 1 + max(self._height(a.left), self._height(a.right))
+        b.height = 1 + max(self._height(b.left), self._height(b.right))
 
         # Return the new root node
         return b
 
-    def getMinNode(self, node):
+    def _get_min_node(self, node):
         if node is None or node.left is None:
             return node
-        return self.getMinNode(node.left)
+        return self._get_min_node(node.left)
 
-    def iterate(self):
+    def _iterate_nodes(self):
         node = self.root
         if not node: return None
         for n in node:
             yield n
 
-    def isBalanced(self):
-        for n in self.iterate():
-            bal = self.getBalance(n)
+    def _is_balanced(self):
+        for n in self._iterate_nodes():
+            bal = self._balance(n)
             if bal not in (1,0,-1): return False
         return True
 
     def __iter__(self): # client iterate in order key/values
-        for n in self.iterate():
-            yield n.key,n.value
+        for n in self._iterate_nodes():
+            yield n.key, n.value
 
 
 def main(): # run tests on this class
@@ -217,7 +209,7 @@ def main(): # run tests on this class
     tree.put(40)
     tree.put(5)
     tree.put(6)
-    assert tree.isBalanced()
+    assert tree._is_balanced()
     assert [5,6,10,20,30,40] == [ n[0] for n in tree ]
 
 
