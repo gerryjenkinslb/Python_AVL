@@ -1,0 +1,25 @@
+
+
+level order
+
+startQ = root
+level = 0
+while startQ not empty:
+   nextQ = new Que
+   for x in startQ:
+        nextQ.add x.left
+        nextQ.add x.right
+    print nextQ
+    level += 1
+    startQ = nextQ
+------------------------------ < spaces                            spaces/field width 
+                              xx                                 1 32-2/    64
+              xx                              xx                 2 16-2/    32
+      xx              xx              xx              xx         4 8-2/     16
+  xx      xx      xx      xx      xx      xx      xx      xx     8 4-2/     8
+xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  16 2-2/     4
+----  < field width
+< 32 items
+
+                              
+123456789012345678901234567890
