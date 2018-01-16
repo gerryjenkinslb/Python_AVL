@@ -47,19 +47,19 @@ class AVLTree:
         else: # equal
             node.value = value  # key already in tree, change value
             return node # return existing node
-        return self._adjust_node(node, key)
+        return self._adjust_node(node)
 
-    def _adjust_node(self, node, key):
+    def _adjust_node(self, node):
         node.height = 1 + max(self._height(node.right), self._height(node.left))
         balance = self._balance(node)
 
         # check for imbalance and rotate to correct
         if balance > 1: # left heavy
-            if key > node.left.key:
+            if self._balance(node.left) < 0:
                 node.left = self._leftRotate(node.left) # Left Right
             return self._rightRotate(node) # catch either Left Right or Right Right
         elif balance < -1:
-            if key < node.right.key:
+            if self._balance(node.right) > 0:
                 node.right = self._rightRotate(node.right) # Right Left
             return self._leftRotate(node) # catch either Right Left or Left Left
 
@@ -91,12 +91,11 @@ class AVLTree:
             node.key = succ.key # copy
             node.value = succ.value
             node.right = self._delete(node.right, succ.key)  # delete succ succ key
-            return node
 
         # If the tree has only one node, simply return it
         if node is None: return node
 
-        return self._adjust_node(node, key)
+        return self._adjust_node(node)
 
     def _find_node(self, node, key):
         if not node:
