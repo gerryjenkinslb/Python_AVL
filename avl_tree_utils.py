@@ -41,19 +41,16 @@ def tree_from_keys(l): # return new tree from iter of keys
     for key in l: tree[key] = None
     return tree
 
-
 def tree_from_dict(d): # create tree from dict key/values
     tree = AVLTree()
     for key in d.keys():
         tree[key] = d[key]
     return tree
 
-
 def is_balanced(tree): # used to check balance of tree
     for node in tree.root:
         if tree._balance(node) not in (1, 0, -1): return False
     return True
-
 
 def tree_to_dict(tree): # convert tree to dict
     d = {}
