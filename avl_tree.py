@@ -1,5 +1,4 @@
 class AVLNode:  # node class hidden from client
-
     def __init__(self, key, value = 0):
         self.key = key
         self.value = value
@@ -68,8 +67,7 @@ class AVLTree:
     def __delitem__(self, key):
         self.root = self._delete(self.root, key)
 
-    # Recursive function to delete a node with
-    # given key from subtree with given node.
+    # Recursive function to delete a node with given key from subtree with given node.
     # It returns node of the modified subtree.
     def _delete(self, node, key):
         if not node: return node # not found
@@ -140,67 +138,3 @@ class AVLTree:
     def __iter__(self): # client iterate in order key/values
         if not self.root: return
         for n in self.root: yield (n.key, n.value)
-
-## end AVLTree
-
-#### TEST it ###
-
-def is_balanced(tree): # used to check balance of tree
-    for node in tree.root:
-        if tree._balance(node) not in (1, 0, -1): return False
-    return True
-
-def print_tree(tree):
-    blank = AVLNode("  ")
-    space_geometry = ((0, 2), (2, 6), (6, 14), (14, 30), (30, 62))  # floor ->  (pre-spaces, join space)
-    th = tree.root.height
-    nextQ = [ tree.root]
-    i = 0
-    while True:
-        if i > 5: # too big
-            print("... to many levels to list")
-            break
-        floor = th - i - 1
-        if floor < 0: return
-        print(" "*(space_geometry[floor][0]), end='')
-        line = (" "*(space_geometry[floor][1])).join([ "%2s"%(x.key)for x in nextQ])
-        print(line)
-        i += 1
-        fromQ = nextQ
-        nextQ = []
-        for node in fromQ:
-            if node.left is not None:
-                nextQ.append(node.left)
-            else:
-                nextQ.append(blank)
-            if node.right is not None:
-                nextQ.append(node.right)
-            else:
-                nextQ.append(blank)
-
-
-
-def main(): # run tests on AVLTree for contains, getitem, setitem, delitem, len, and iter operators
-
-    tree = AVLTree()
-    tree[10] = 1 # build a tree
-    tree[20] = 2
-    tree[30] = 3
-    tree[40] = 4
-    tree[5] = 5
-    tree[6] = 6
-    print_tree(tree)
-    assert is_balanced(tree)
-    assert [(5,5),(6,6),(10,1),(20,2),(30,3),(40,4)] == [ n for n in tree ]
-    assert len(tree) == 6
-    l = [ 10,20,30,40,5,6]
-    for k in l:
-        print('delete', k)
-        print_tree(tree)
-        del tree[k]
-        #tree[k] = 'replaced'
-
-
-if __name__ == "__main__":
-    # execute only if run as a script
-    main()
