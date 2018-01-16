@@ -3,7 +3,6 @@ from avl_tree_utils import *
 
 import random
 
-
 def assert_true( exp, msg):
     if not exp:
         print(f'*** Test failed: {msg}')
@@ -41,19 +40,10 @@ def test_insert_remove(size): # test tree from random, delete, and rebalance, se
         del dref[key]
         assert_true(is_balanced(tree), f"tree is not balanced after deleting key:{key} ")
         assert_true(dict_to_sorted_pairs(dref) == list(tree), f"random tree did not match reference")
-
-
-def simple_test():
-    insert_list = [2, 3, 4, 1 ]
-    del_list = [ 2, 3]
-    tree = AVLTree()
-    for k in insert_list: tree[k] = k
-    del tree[k]
-
+        
 def test_tree():
     test_balance1()
     test_insert_remove(500)
-
 
 if __name__ == '__main__':
     test_tree()
